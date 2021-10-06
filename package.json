@@ -26,8 +26,8 @@
   },
   "dependencies": {
     "@szhsin/react-menu": "^2.1.0",
-    "js-cookie": "^3.0.1",
-    "node-fetch": "^3.0.0"
+    "axios": "^0.22.0",
+    "js-cookie": "^3.0.1"
   },
   "peerDependencies": {
     "@builder.io/sdk": "^1.1.20",
