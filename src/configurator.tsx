@@ -12,8 +12,6 @@ import {
   SubMenu,
   useMenuState,
 } from '@szhsin/react-menu'
-import '@szhsin/react-menu/dist/index.css'
-import '@szhsin/react-menu/dist/transitions/slide.css'
 
 import { useContextMenu } from './use-context-menu'
 
