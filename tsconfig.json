@@ -7,7 +7,7 @@
     "esModuleInterop": true,
     "strict": true,
     "declaration": true,
-    "jsx": "react",
+    "jsx": "preserve",
     "skipLibCheck": true
   },
   "include": ["./src"],

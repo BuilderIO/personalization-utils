@@ -2,3 +2,4 @@ src/*.js
 src/*.d.ts
 node_modules
 dist
+public

@@ -1,6 +1,6 @@
 {
   "name": "@builder.io/personalization-utils",
-  "version": "0.0.3",
+  "version": "0.0.5-2",
   "description": "Utils for personalization at the edge [Experimental]",
   "main": "./dist/index.js",
   "scripts": {
@@ -8,6 +8,10 @@
     "prepublish": "npm run build",
     "test": "jest"
   },
+  "files":[
+    "dist/**/*",
+    "src/**/*"
+  ],
   "devDependencies": {
     "@builder.io/sdk": "^1.1.20",
     "@types/js-cookie": "^3.0.0",
