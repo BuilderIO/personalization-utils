@@ -79,7 +79,7 @@ export const Configurator: React.FC<{
       <MenuItem onClick={reset}>Reset</MenuItem>
 
       {keys.sort().map((attr, index) => {
-        const options = attributes[attr].enum as string[]
+        const options = attributes![attr].enum as string[]
         return (
           <SubMenu key={index} label={`${attr} settings`}>
             {options ? (
