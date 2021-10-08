@@ -1,19 +1,19 @@
 export const getUrlSegments = (values: Record<string, string>) => {
-  const attrs = Object.keys(values)
+  const attrs = Object.keys(values);
   return attrs
     .map((attr) => `${attr}=${encodeURIComponent(values[attr])}`)
-    .sort()
-}
+    .sort();
+};
 
 export const getTargetingValues = (path: string[]) => {
   return path.sort().reduce((acc, segment) => {
-    const [key, value] = segment.split('=')
+    const [key, value] = segment.split("=");
     if (key) {
       return {
         ...acc,
         [key]: decodeURIComponent(value),
-      }
+      };
     }
-    return acc
-  }, {})
-}
+    return acc;
+  }, {});
+};

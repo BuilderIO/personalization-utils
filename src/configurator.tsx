@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react'
-import { useRouter } from 'next/router'
-import Cookies from 'js-cookie'
-import { getTargetingCookies } from './cookie-utils'
-import { Input } from '@builder.io/sdk'
+import React, { useEffect, useState } from "react";
+import { useRouter } from "next/router";
+import Cookies from "js-cookie";
+import { getTargetingCookies } from "./cookie-utils";
+import { Input } from "@builder.io/sdk";
 import {
   ControlledMenu,
   FocusableItem,
@@ -11,63 +11,63 @@ import {
   MenuRadioGroup,
   SubMenu,
   useMenuState,
-} from '@szhsin/react-menu'
+} from "@szhsin/react-menu";
 
-import { useContextMenu } from './use-context-menu'
+import { useContextMenu } from "./use-context-menu";
 
 export interface TargetingAttributes {
-  [key: string]: Input
+  [key: string]: Input;
 }
 
 export const Configurator: React.FC<{
-  targetingAttributes?: TargetingAttributes
-  attributesApiPath?: string
+  targetingAttributes?: TargetingAttributes;
+  attributesApiPath?: string;
 }> = ({ targetingAttributes, attributesApiPath }) => {
-  const router = useRouter()
-  const { x, y, menu, enableContextMenu } = useContextMenu()
+  const router = useRouter();
+  const { x, y, menu, enableContextMenu } = useContextMenu();
   const [loading, setLoading] = useState(false);
 
-  const [attributes, setAttributes] = useState(targetingAttributes)
+  const [attributes, setAttributes] = useState(targetingAttributes);
   useEffect(() => {
     async function init() {
       if (attributes) {
         enableContextMenu(true);
-      }
-      else {
+      } else {
         setLoading(true);
         try {
-          const response = await fetch(attributesApiPath || '/api/attributes')
-          .then(res => res.json())
+          const response = await fetch(
+            attributesApiPath || "/api/attributes"
+          ).then((res) => res.json());
           setAttributes(response);
           enableContextMenu(true);
         } catch (error) {
           console.error(error);
         }
         setLoading(false);
+      }
     }
-  }
     init();
-  }, [])
+  }, []);
   const setCookie = (name: string, val: string) => () => {
-    Cookies.set(`builder.userAttributes.${name}`, val)
-    router.reload()
-  }
+    Cookies.set(`builder.userAttributes.${name}`, val);
+    router.reload();
+  };
 
   const reset = () => {
-    const cookies = getTargetingCookies(Cookies.get())
-    cookies.forEach((cookie) => Cookies.remove(cookie))
-    router.reload()
-  }
+    const cookies = getTargetingCookies(Cookies.get());
+    cookies.forEach((cookie) => Cookies.remove(cookie));
+    router.reload();
+  };
 
-  const { toggleMenu, ...menuProps } = useMenuState()
+  const { toggleMenu, ...menuProps } = useMenuState();
 
   useEffect(() => {
     if (menu && attributes) {
-      toggleMenu(true)
+      toggleMenu(true);
     }
-  }, [menu])
+  }, [menu]);
 
-  const keys = Object.keys(attributes || {})
+  const keys = Object.keys(attributes || {});
 
   return (
     <ControlledMenu
@@ -79,7 +79,7 @@ export const Configurator: React.FC<{
       <MenuItem onClick={reset}>Reset</MenuItem>
 
       {keys.sort().map((attr, index) => {
-        const options = attributes![attr].enum as string[]
+        const options = attributes![attr].enum as string[];
         return (
           <SubMenu key={index} label={`${attr} settings`}>
             {options ? (
@@ -101,10 +101,10 @@ export const Configurator: React.FC<{
                 {({ ref }) => (
                   <form
                     onSubmit={(e) => {
-                      const data = new FormData(e.currentTarget)
-                      const values = Object.fromEntries(data.entries())
-                      e.preventDefault()
-                      setCookie(attr, values[attr] as string)()
+                      const data = new FormData(e.currentTarget);
+                      const values = Object.fromEntries(data.entries());
+                      e.preventDefault();
+                      setCookie(attr, values[attr] as string)();
                     }}
                   >
                     <input
@@ -120,11 +120,9 @@ export const Configurator: React.FC<{
               </FocusableItem>
             )}
           </SubMenu>
-        )
+        );
       })}
-      {
-        loading && "Loading.."
-      }
+      {loading && "Loading.."}
     </ControlledMenu>
-  )
-}
+  );
+};
