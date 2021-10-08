@@ -24,20 +24,29 @@ export const Configurator: React.FC<{
   attributesApiPath?: string
 }> = ({ targetingAttributes, attributesApiPath }) => {
   const router = useRouter()
-  const { x, y, menu } = useContextMenu()
+  const { x, y, menu, enableContextMenu } = useContextMenu()
+  const [loading, setLoading] = useState(false);
 
   const [attributes, setAttributes] = useState(targetingAttributes)
   useEffect(() => {
-    if (!attributes) {
-      fetch(attributesApiPath || '/api/attributes')
-        .then((res) => res.json())
-        .then(setAttributes)
-        .then(() => {
-          if (attributes && menu) {
-            toggleMenu(true)
-          }
-        })
+    async function init() {
+      if (attributes) {
+        enableContextMenu(true);
+      }
+      else {
+        setLoading(true);
+        try {
+          const response = await fetch(attributesApiPath || '/api/attributes')
+          .then(res => res.json())
+          setAttributes(response);
+          enableContextMenu(true);
+        } catch (error) {
+          console.error(error);
+        }
+        setLoading(false);
     }
+  }
+    init();
   }, [])
   const setCookie = (name: string, val: string) => () => {
     Cookies.set(`builder.userAttributes.${name}`, val)
@@ -58,10 +67,7 @@ export const Configurator: React.FC<{
     }
   }, [menu])
 
-  if (!attributes) {
-    return null
-  }
-  const keys = Object.keys(attributes)
+  const keys = Object.keys(attributes || {})
 
   return (
     <ControlledMenu
@@ -116,6 +122,9 @@ export const Configurator: React.FC<{
           </SubMenu>
         )
       })}
+      {
+        loading && "Loading.."
+      }
     </ControlledMenu>
   )
 }
