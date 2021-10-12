@@ -19,10 +19,12 @@ export interface TargetingAttributes {
   [key: string]: Input;
 }
 
-export const Configurator: React.FC<{
+export interface ConfiguratorProps {
   targetingAttributes?: TargetingAttributes;
   attributesApiPath?: string;
-}> = ({ targetingAttributes, attributesApiPath }) => {
+}
+
+export const Configurator: React.FC<ConfiguratorProps> = ({ targetingAttributes, attributesApiPath }) => {
   const router = useRouter();
   const { x, y, menu, enableContextMenu } = useContextMenu();
   const [loading, setLoading] = useState(false);
