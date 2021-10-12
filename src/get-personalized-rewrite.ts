@@ -5,7 +5,6 @@ export const getPersonalizedRewrite = (
   pathname: string,
   cookies: Record<string, string>
 ) => {
-  // Get and set the bucket cookie
   const attributes = getTargetingCookies(cookies);
   const values = attributes.reduce((acc, cookie) => {
     const value = cookies[cookie];
