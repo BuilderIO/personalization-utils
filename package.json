@@ -1,6 +1,6 @@
 {
   "name": "@builder.io/personalization-utils",
-  "version": "0.0.5-10",
+  "version": "0.0.5",
   "description": "Utils for personalization at the edge [Experimental]",
   "main": "./dist/index.js",
   "scripts": {
