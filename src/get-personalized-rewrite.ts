@@ -11,15 +11,15 @@ export const getPersonalizedRewrite = (
     const key = cookie.split("builder.userAttributes.")[1];
     return {
       ...acc,
-      ...(value && { [key]: value }),
+      ...(typeof value === 'string' && { [key]: value }),
     };
   }, {});
 
   if (Object.keys(values).length > 0) {
-    return `/builder/${getUrlSegments({
+    return `/;${getUrlSegments({
       urlPath: pathname,
       ...values,
-    }).join("/")}`;
+    }).join(";")}`;
   }
 
   return false;

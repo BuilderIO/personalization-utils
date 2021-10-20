@@ -2,50 +2,77 @@
 
 A collection of handy utilities when working with delivering personalized Builder content at the edge.
 
+```
+npm install @builder.io/personalization-utils
+```
+
 # How to start with personalized rewrites ? 
 
-using `getPersonalizedRewrite` identifying the current personalization target based on cookies and origin URL path, it should be used in middleware in combination with a nextjs path in the same middleware folder, to start add a `builder` folder in your pages , with a single file `[[...path]].tsx`:
+using `getPersonalizedRewrite` identifies the current personalization target based on cookies and origin URL path, it should be used in middleware in combination a static catch all page generation `[...path].tsx`:
 
 ```ts
-import type { GetStaticPropsContext } from 'next'
-// where the path component here responsible for rendering the page at the original Url
-import Path from '../[[...path]]'
-import { getPersonalizedPage } from '@builder.io/personalization-utils'
-import builderConfig from '@config/builder'
-
+// in pages/[[...path]].tsx
 export async function getStaticProps({
   params,
 }: GetStaticPropsContext<{ path: string[] }>) {
-  const page = await getPersonalizedPage(
-    params?.path!,
-    'page',
-    builderConfig.apiKey
-  )
+  const isPersonalizedRequest = params?.path?.[0].startsWith(';');
+  const page =
+    (await builder
+      .get('page', {
+        apiKey: builderConfig.apiKey,
+        userAttributes: isPersonalizedRequest ?  {
+          // if it's a personalized page let's fetch it:
+          ...getTargetingValues(params!.path[0].split(';').slice(1))
+        }: {
+          urlPath: '/' + (params?.path?.join('/') || ''),
+        },
+        cachebust: true,
+      })
+      .toPromise()) || null
+
   return {
     props: {
       page,
     },
+    // Next.js will attempt to re-generate the page:
+    // - When a request comes in
+    // - At most once every 5 seconds
     revalidate: 5,
   }
 }
 
-export async function getStaticPaths() {
+export function getStaticPaths() {
   return {
     paths: [],
     fallback: true,
   }
 }
 
-export default Path
+export default function Path({ page }) {
+  return  <BuilderComponent renderLink={Link} model="page" content={page} />
+}
 ```
-Now that we have a path for rendering personalized variations ready, let's route to it in the middleware:
+
+Now that we have a path for rendering builder content ready, let's route to it in the middleware:
 ```ts
-  const rewrite = getPersonalizedRewrite(req.url?.pathname! , req.cookies)
-  if (rewrite) {
-    res.rewrite(rewrite)
-  } else {
-    next();
+import { NextFetchEvent, NextResponse } from 'next/server'
+import { getPersonalizedRewrite } from '@builder.io/personalization-utils'
+
+const excludededPrefixes = ['/favicon', '/api'];
+
+export default function middleware(
+  event: NextFetchEvent
+) {
+  const url = event.request.nextUrl;
+  let response = NextResponse.next();
+  if (!excludededPrefixes.find(path => url.pathname?.startsWith(path))) {
+    const rewrite = getPersonalizedRewrite(url?.pathname!, event.request.cookies);
+    if (rewrite) {
+      response = NextResponse.rewrite(rewrite);
+    }
   }
+  event.respondWith(response);
+}
 
 ```
 
@@ -54,7 +81,7 @@ Great now that we have the personzlized routes ready all we need to do is set th
   const audience = await myCDP.identifyAudience(userID);
   setCookie(`builder.userAttributes.audience`, audience)
 ```
-Once the cookie is set, all builder content matcing from now on will weigh in the current audience segment.
+Once the cookie is set, all builder content matching from now on will weigh in the current audience segment.
 
 
 
