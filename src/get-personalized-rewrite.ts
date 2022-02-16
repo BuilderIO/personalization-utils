@@ -1,6 +1,12 @@
 import { getUrlSegments } from "./url-utils";
 import { getTargetingCookies } from "./cookie-utils";
 
+const delimeter = ';'
+
+export const isPersonalizedPath = (path?: string) => {
+  return path?.startsWith(delimeter)
+}
+
 export const getPersonalizedRewrite = (
   pathname: string,
   cookies: Record<string, string>
@@ -19,7 +25,7 @@ export const getPersonalizedRewrite = (
     return `/;${getUrlSegments({
       urlPath: pathname,
       ...values,
-    }).join(";")}`;
+    }).join(delimeter)}`;
   }
 
   return false;
